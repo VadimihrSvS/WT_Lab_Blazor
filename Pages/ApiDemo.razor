@@ -1,0 +1,30 @@
+@page "/apidemo"
+@inject HttpClient client
+@inject IHttpClientFactory clientFactory
+@using Lab_WT_Blazor.Data
+@using Lab_WT_Blazor.Components
+<div class="container">
+    <DishesList @bind-Dishes="dishes" SelectedObjectChanged="ShowDetails"></DishesList>
+    <DishDetails @bind-Dish="SelectedDish"></DishDetails>
+</div>
+
+@code {
+    [Parameter]
+    public DetailsViewModel SelectedDish { get; set; }
+    private async Task ShowDetails(int id)
+    {
+        SelectedDish =
+        await
+        client.GetFromJsonAsync<DetailsViewModel>(apiBaseAddress + $"/{id}");
+    }
+
+    [Parameter]
+    public IEnumerable<ListViewModel> dishes { get; set; }
+
+    string apiBaseAddress = "http://localhost:5093/Api/Dishes";
+    protected override async Task OnInitializedAsync()
+    {
+
+        dishes = await client.GetFromJsonAsync<IEnumerable<ListViewModel>>(apiBaseAddress);
+    }
+}
